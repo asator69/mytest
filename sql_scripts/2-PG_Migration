@@ -82,56 +82,10 @@ CREATE SEQUENCE public.gistaxon_gistaxon_id_seq
 	NO CYCLE
 	OWNED BY NONE;
 -- ddl-end --
+
 ALTER SEQUENCE public.gistaxon_gistaxon_id_seq OWNER TO postgres;
 -- ddl-end --
 
-
-
-----------------------------------------------------------------------------------table created from join tbllocality-tbltaxon------------------------------------------------------------------------------------------------
-
---joining geom column to taxon
-
-
--- object: public.gistaxon | type: TABLE --
--- DROP TABLE IF EXISTS public.gistaxon CASCADE;
-CREATE TABLE public.gistaxon(
-	locality_geom geometry,
-	taxon_uuid character varying(36),
-	uuid character varying(36),
-	rank_uuid character varying(36),
-	parentname character varying(255),
-	parent_uuid character varying(36),
-	acceptedname character varying(255),
-	accepted_uuid character varying(36),
-	taxonomicstatus character varying(36),
-	author character varying(255),
-	taxonname character varying(255),
-	genus character varying(255),
-	subgenus character varying(255),
-	specificepithet character varying(255),
-	infraspecificepithet character varying(255),
-	infraspecificmarker character varying(255),
-	kingdom character varying(255),
-	phylum character varying(255),
-	tax_class character varying(255),
-	tax_order character varying(255),
-	supertax_family character varying(255),
-	tax_family character varying(255),
-	subtax_family character varying(255),
-	tribe character varying(255),
-	source character varying(255),
-	taxon_source_id character varying(255),
-	version character varying(255),
-	source_url character varying(255),
-	source_database character varying(255),
-	scientificname character varying(255),
-	gistaxon_id integer NOT NULL DEFAULT nextval('public.gistaxon_gistaxon_id_seq'::regclass),
-	CONSTRAINT pk_gistaxon PRIMARY KEY (gistaxon_id)
-
-);
--- ddl-end --
-ALTER TABLE public.gistaxon OWNER TO postgres;
--- ddl-end --
 
 -- object: public.tblagent | type: TABLE --
 -- DROP TABLE IF EXISTS public.tblagent CASCADE;

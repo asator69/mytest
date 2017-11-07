@@ -1,0 +1,107 @@
+--Derive postgis data from pg_database
+
+--author: André Beuger
+
+
+
+--1. Add Geometry to normal pg-tables
+
+ALTER TABLE public.tbllocality
+   ADD COLUMN locality_geom point;
+
+SELECT AddGeometryColumn('tbllocality', 'locality_geom', 4326, 'POINT', 2 );
+
+UPDATE public.tbllocality SET locality_geom = ST_SetSRID(ST_MakePoint(longdec_begin, latdec_begin), 4326);
+
+
+
+--2. Establishing referential integrety (foreign keys)
+--see foreignkeys.sql
+
+
+--3. Join geom column to taxon table
+
+--3.1. Temporary view
+
+CREATE OR REPLACE VIEW public.v_temp AS 
+ SELECT a.locality_geom,
+    a.localityname,
+    b.col_uuid,
+    c.c_uuid
+   FROM tblcollectingevent b
+     JOIN tbllocality a ON a.uuid::text = b.locality_uuid::text
+     JOIN tblcollectionobject c ON b.col_uuid::text = c.collectingevent_uuid::text;
+
+ALTER TABLE public.v_temp
+  OWNER TO admin;
+
+
+--3.2 Second View
+
+CREATE OR REPLACE VIEW public.v_location_taxon AS 
+ SELECT a.d_uuid,
+    a.taxon_uuid,
+    b.locality_geom,
+    b.localityname,
+    b.col_uuid,
+    c.taxonname,
+    c.genus,
+    c.subgenus,
+    c.kingdom,
+    c.phylum,
+    c.tax_class,
+    c.tax_order,
+    c.supertax_family,
+    c.tax_family,
+    c.subtax_family,
+    c.tribe,
+    c.source,
+    c.version,
+    c.source_database,
+    c.scientificname
+   FROM tbldetermination a
+     JOIN v_temp b ON a.collectionobject_uuid::text = b.c_uuid::text
+     JOIN tbltaxon c ON a.taxon_uuid::text = c.uuid::text;
+
+ALTER TABLE public.v_location_taxon
+  OWNER TO admin;
+
+
+--3.3. Create table from view
+
+create table public.pg_taxon as
+select * from v_location_taxon;
+
+
+-- Table: public.pg_taxon
+
+-- DROP TABLE public.pg_taxon;
+
+CREATE TABLE public.pg_taxon
+(
+  d_uuid character varying(36),
+  taxon_uuid character varying(36),
+  locality_geom geometry(Point,4326),
+  localityname character varying(255),
+  col_uuid character varying(36),
+  taxonname character varying(255),
+  genus character varying(255),
+  subgenus character varying(255),
+  kingdom character varying(255),
+  phylum character varying(255),
+  tax_class character varying(255),
+  tax_order character varying(255),
+  supertax_family character varying(255),
+  tax_family character varying(255),
+  subtax_family character varying(255),
+  tribe character varying(255),
+  source character varying(255),
+  version character varying(255),
+  source_database character varying(255),
+  scientificname character varying(255)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.pg_taxon
+  OWNER TO admin;
