@@ -1,0 +1,869 @@
+-- Database generated with pgModeler (PostgreSQL Database Modeler).
+-- pgModeler  version: 0.9.0-beta
+-- PostgreSQL version: 9.6
+-- Project Site: pgmodeler.com.br
+
+-- Model Author: André Beuger
+
+---------------------------------------------------------------------------------pg_database migrated from MySQLdump---------------------------------------------------------------------------------------------------
+
+
+-- object: admin | type: ROLE --
+-- DROP ROLE IF EXISTS admin;
+CREATE ROLE admin WITH 
+	SUPERUSER
+	CREATEDB
+	CREATEROLE
+	INHERIT
+	LOGIN
+	REPLICATION
+	ENCRYPTED PASSWORD '********';
+-- ddl-end --
+
+
+-- Database creation must be done outside an multicommand file.
+-- These commands were put in this file only for convenience.
+-- -- object: ibis2 | type: DATABASE --
+-- -- DROP DATABASE IF EXISTS ibis_migr;
+-- CREATE DATABASE ibis_migr
+-- 	ENCODING = 'UTF8'
+-- 	LC_COLLATE = 'German_Germany.1252'
+-- 	LC_CTYPE = 'German_Germany.1252'
+-- 	TABLESPACE = pg_default
+-- 	OWNER = 'your login'
+-- ;
+-- -- ddl-end --
+-- 
+
+-- object: postgis | type: EXTENSION --
+-- DROP EXTENSION IF EXISTS postgis CASCADE;
+CREATE EXTENSION postgis
+      WITH SCHEMA public
+      VERSION '2.3.3';
+-- ddl-end --
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
+-- ddl-end --
+
+-- object: postgis_sfcgal | type: EXTENSION --
+-- DROP EXTENSION IF EXISTS postgis_sfcgal CASCADE;
+CREATE EXTENSION postgis_sfcgal
+      WITH SCHEMA public
+      VERSION '2.3.3';
+-- ddl-end --
+COMMENT ON EXTENSION postgis_sfcgal IS 'PostGIS SFCGAL functions';
+-- ddl-end --
+
+-- object: pointcloud | type: EXTENSION --
+-- DROP EXTENSION IF EXISTS pointcloud CASCADE;
+CREATE EXTENSION pointcloud
+      WITH SCHEMA public
+      VERSION '1.1.0';
+-- ddl-end --
+COMMENT ON EXTENSION pointcloud IS 'data type for lidar point clouds';
+-- ddl-end --
+
+-- object: pointcloud_postgis | type: EXTENSION --
+-- DROP EXTENSION IF EXISTS pointcloud_postgis CASCADE;
+CREATE EXTENSION pointcloud_postgis
+      WITH SCHEMA public
+      VERSION '1.0';
+-- ddl-end --
+COMMENT ON EXTENSION pointcloud_postgis IS 'integration for pointcloud LIDAR data and PostGIS geometry data';
+-- ddl-end --
+
+-- object: public.gistaxon_gistaxon_id_seq | type: SEQUENCE --
+-- DROP SEQUENCE IF EXISTS public.gistaxon_gistaxon_id_seq CASCADE;
+CREATE SEQUENCE public.gistaxon_gistaxon_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 9223372036854775807
+	START WITH 1
+	CACHE 1
+	NO CYCLE
+	OWNED BY NONE;
+-- ddl-end --
+ALTER SEQUENCE public.gistaxon_gistaxon_id_seq OWNER TO postgres;
+-- ddl-end --
+
+
+
+----------------------------------------------------------------------------------table created from join tbllocality-tbltaxon------------------------------------------------------------------------------------------------
+
+--joining geom column to taxon
+
+
+-- object: public.gistaxon | type: TABLE --
+-- DROP TABLE IF EXISTS public.gistaxon CASCADE;
+CREATE TABLE public.gistaxon(
+	locality_geom geometry,
+	taxon_uuid character varying(36),
+	uuid character varying(36),
+	rank_uuid character varying(36),
+	parentname character varying(255),
+	parent_uuid character varying(36),
+	acceptedname character varying(255),
+	accepted_uuid character varying(36),
+	taxonomicstatus character varying(36),
+	author character varying(255),
+	taxonname character varying(255),
+	genus character varying(255),
+	subgenus character varying(255),
+	specificepithet character varying(255),
+	infraspecificepithet character varying(255),
+	infraspecificmarker character varying(255),
+	kingdom character varying(255),
+	phylum character varying(255),
+	tax_class character varying(255),
+	tax_order character varying(255),
+	supertax_family character varying(255),
+	tax_family character varying(255),
+	subtax_family character varying(255),
+	tribe character varying(255),
+	source character varying(255),
+	taxon_source_id character varying(255),
+	version character varying(255),
+	source_url character varying(255),
+	source_database character varying(255),
+	scientificname character varying(255),
+	gistaxon_id integer NOT NULL DEFAULT nextval('public.gistaxon_gistaxon_id_seq'::regclass),
+	CONSTRAINT pk_gistaxon PRIMARY KEY (gistaxon_id)
+
+);
+-- ddl-end --
+ALTER TABLE public.gistaxon OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblagent | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblagent CASCADE;
+CREATE TABLE public.tblagent(
+	uuid character varying(36) NOT NULL,
+	agenttype character varying(36),
+	firstname character varying(255),
+	middleinitial character varying(255),
+	lastname character varying(255),
+	displayname character varying(255),
+	institution_uuid character varying(36),
+	email character varying(128),
+	phone character varying(128),
+	CONSTRAINT idx_18018_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblagent OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblcollectingevent | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblcollectingevent CASCADE;
+CREATE TABLE public.tblcollectingevent(
+	uuid character varying(36) NOT NULL,
+	collectingtrip_uuid character varying(36),
+	locality_uuid character varying(36),
+	startdate timestamp with time zone,
+	enddate timestamp with time zone,
+	method character varying(255),
+	remarks text,
+	info character varying(255),
+	CONSTRAINT idx_18024_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblcollectingevent OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblcollectingtrip | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblcollectingtrip CASCADE;
+CREATE TABLE public.tblcollectingtrip(
+	uuid character varying(36) NOT NULL,
+	tripname character varying(255),
+	startdate timestamp with time zone,
+	enddate timestamp with time zone,
+	remarks text,
+	CONSTRAINT idx_18030_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblcollectingtrip OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblcollectionobject | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblcollectionobject CASCADE;
+CREATE TABLE public.tblcollectionobject(
+	uuid character varying(36) NOT NULL,
+	parentcontainer_uuid character varying(36),
+	gin character varying(64),
+	foreign_id character varying(64),
+	outerqrcode character varying(64),
+	innerqrcode character varying(64),
+	collection_uuid character varying(36),
+	collectingevent_uuid character varying(36) NOT NULL,
+	collobjecttype_uuid character varying(36) NOT NULL,
+	reference_uuid character varying(36),
+	remarks text,
+	lifestage_uuid character varying(36),
+	sex_uuid character varying(36),
+	liquidated boolean,
+	CONSTRAINT idx_18036_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblcollectionobject OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblcollector | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblcollector CASCADE;
+CREATE TABLE public.tblcollector(
+	uuid character varying(78) NOT NULL,
+	agent_uuid character varying(36) NOT NULL,
+	collectingevent_uuid character varying(36) NOT NULL,
+	isprimary boolean,
+	rank integer,
+	remarks text,
+	CONSTRAINT idx_18042_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblcollector OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblcollobjectimages | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblcollobjectimages CASCADE;
+CREATE TABLE public.tblcollobjectimages(
+	uuid character varying(36) NOT NULL,
+	collectionobject_uuid character varying(36) NOT NULL,
+	initialfullpath character varying(128),
+	actualpath character varying(128),
+	imagename character varying(255),
+	CONSTRAINT idx_18048_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblcollobjectimages OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblcollobjecttype | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblcollobjecttype CASCADE;
+CREATE TABLE public.tblcollobjecttype(
+	uuid character varying(36) NOT NULL,
+	description character varying(255),
+	CONSTRAINT idx_18054_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblcollobjecttype OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tbldetermination | type: TABLE --
+-- DROP TABLE IF EXISTS public.tbldetermination CASCADE;
+CREATE TABLE public.tbldetermination(
+	uuid character varying(36) NOT NULL,
+	collectionobject_uuid character varying(36) NOT NULL,
+	taxon_uuid character varying(36),
+	current boolean,
+	confidence character varying(64),
+	determineddate timestamp with time zone,
+	method character varying(255),
+	qualifier_uuid character varying(36),
+	remarks text,
+	typestatus_uuid character varying(36),
+	typestatusdescr character varying(64),
+	CONSTRAINT idx_18057_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tbldetermination OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tbldeterminator | type: TABLE --
+-- DROP TABLE IF EXISTS public.tbldeterminator CASCADE;
+CREATE TABLE public.tbldeterminator(
+	uuid character varying(73) NOT NULL,
+	determination_uuid character varying(36) NOT NULL,
+	agent_uuid character varying(36) NOT NULL,
+	rank integer,
+	isprimary boolean,
+	CONSTRAINT idx_18063_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tbldeterminator OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblinstitution | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblinstitution CASCADE;
+CREATE TABLE public.tblinstitution(
+	uuid character varying(36) NOT NULL,
+	shortname character varying(10),
+	longname character varying(255),
+	url character varying(255),
+	address1 character varying(255),
+	address2 character varying(255),
+	postalcode character varying(16),
+	city character varying(255),
+	country character varying(255),
+	email character varying(128),
+	phone character varying(128),
+	CONSTRAINT idx_18066_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblinstitution OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tbllifestage | type: TABLE --
+-- DROP TABLE IF EXISTS public.tbllifestage CASCADE;
+CREATE TABLE public.tbllifestage(
+	uuid character varying(36) NOT NULL,
+	lifestage character varying(255),
+	CONSTRAINT idx_18072_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tbllifestage OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tbllocality | type: TABLE --
+-- DROP TABLE IF EXISTS public.tbllocality CASCADE;
+CREATE TABLE public.tbllocality(
+	uuid character varying(36) NOT NULL,
+	geography_uuid character varying(36),
+	locality_qrcode character varying(64),
+	coordinates character varying(255),
+	latlongtext_begin character varying(100),
+	latlongtext_end character varying(100),
+	latdec_begin numeric(12,10),
+	latdec_end numeric(12,10),
+	longdec_begin numeric(13,10),
+	longdec_end numeric(13,10),
+	maxelevation double precision,
+	minevelation double precision,
+	accuracy double precision,
+	localityname character varying(255),
+	remarks text,
+	macrohabitat_notes text,
+	microhabitat_notes text,
+	trap character varying(255),
+	locality_geom geometry,
+	CONSTRAINT idx_18075_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tbllocality OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblpreparation | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblpreparation CASCADE;
+CREATE TABLE public.tblpreparation(
+	uuid character varying(36) NOT NULL,
+	collectionobject_uuid character varying(36) NOT NULL,
+	innerqrcode character varying(64),
+	outerqrcode character varying(64),
+	agent_uuid character varying(36),
+	count integer,
+	preparationtype_uuid character varying(36),
+	description character varying(255),
+	prepareddate timestamp with time zone,
+	remarks text,
+	lifestage_uuid character varying(36),
+	sex_uuid character varying(36),
+	females integer,
+	males integer,
+	storagelocation character varying(255),
+	CONSTRAINT idx_18081_primary PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblpreparation OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblpreparationtype | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblpreparationtype CASCADE;
+CREATE TABLE public.tblpreparationtype(
+	uuid character varying(36) NOT NULL,
+	description character varying(255) DEFAULT NULL,
+	CONSTRAINT pk_tblpreparationtype PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblpreparationtype OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblqualifier | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblqualifier CASCADE;
+CREATE TABLE public.tblqualifier(
+	uuid character varying(36) NOT NULL,
+	qualifier character varying(255) DEFAULT NULL,
+	CONSTRAINT tblqualifier_pkey PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblqualifier OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblrank | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblrank CASCADE;
+CREATE TABLE public.tblrank(
+	uuid character varying(36) NOT NULL,
+	rank character varying(255) DEFAULT NULL,
+	rankcode character varying(10) DEFAULT NULL,
+	CONSTRAINT tblrank_pkey PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblrank OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblsex | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblsex CASCADE;
+CREATE TABLE public.tblsex(
+	uuid character varying(36) NOT NULL,
+	descr character varying(255) DEFAULT NULL,
+	CONSTRAINT pk_tblsexuiid PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblsex OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tblsiteimages | type: TABLE --
+-- DROP TABLE IF EXISTS public.tblsiteimages CASCADE;
+CREATE TABLE public.tblsiteimages(
+	uuid character varying(36) NOT NULL,
+	collectingevent_uuid character varying(36) NOT NULL,
+	initialfullpath character varying(128) DEFAULT NULL,
+	actualpath character varying(128) DEFAULT NULL,
+	imagename character varying(255) DEFAULT NULL,
+	CONSTRAINT pk_tblsiteimages PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tblsiteimages OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tbltaxon | type: TABLE --
+-- DROP TABLE IF EXISTS public.tbltaxon CASCADE;
+CREATE TABLE public.tbltaxon(
+	uuid character varying(36) NOT NULL,
+	rank_uuid character varying(36) DEFAULT NULL,
+	parentname character varying(255) DEFAULT NULL,
+	parent_uuid character varying(36) DEFAULT NULL,
+	acceptedname character varying(255) DEFAULT NULL,
+	accepted_uuid character varying(36) DEFAULT NULL,
+	taxonomicstatus character varying(36) DEFAULT NULL,
+	author character varying(255) DEFAULT NULL,
+	taxonname character varying(255) DEFAULT NULL,
+	genus character varying(255) DEFAULT NULL,
+	subgenus character varying(255) DEFAULT NULL,
+	specificepithet character varying(255) DEFAULT NULL,
+	infraspecificepithet character varying(255) DEFAULT NULL,
+	infraspecificmarker character varying(255) DEFAULT NULL,
+	kingdom character varying(255) DEFAULT NULL,
+	phylum character varying(255) DEFAULT NULL,
+	tax_class character varying(255) DEFAULT NULL,
+	tax_order character varying(255) DEFAULT NULL,
+	supertax_family character varying(255) DEFAULT NULL,
+	tax_family character varying(255) DEFAULT NULL,
+	subtax_family character varying(255) DEFAULT NULL,
+	tribe character varying(255) DEFAULT NULL,
+	source character varying(255) DEFAULT NULL,
+	taxon_source_id character varying(255) DEFAULT NULL,
+	version character varying(255) DEFAULT NULL,
+	source_url character varying(255) DEFAULT NULL,
+	source_database character varying(255) DEFAULT NULL,
+	scientificname character varying(255) DEFAULT NULL,
+	CONSTRAINT idx_taxon_pk PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tbltaxon OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.tbltypestatus | type: TABLE --
+-- DROP TABLE IF EXISTS public.tbltypestatus CASCADE;
+CREATE TABLE public.tbltypestatus(
+	uuid character varying(36) NOT NULL,
+	typestatus character varying(255) DEFAULT NULL,
+	CONSTRAINT pk_typestatus PRIMARY KEY (uuid)
+
+);
+-- ddl-end --
+ALTER TABLE public.tbltypestatus OWNER TO postgres;
+-- ddl-end --
+
+-- object: fki_collectingevent_tbllocality | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_collectingevent_tbllocality CASCADE;
+CREATE INDEX fki_collectingevent_tbllocality ON public.tblcollectingevent
+	USING btree
+	(
+	  locality_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_collectingobject_parentcontainer | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_collectingobject_parentcontainer CASCADE;
+CREATE INDEX fki_collectingobject_parentcontainer ON public.tblcollectionobject
+	USING btree
+	(
+	  reference_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_collectingobject_tblcollectingevent | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_collectingobject_tblcollectingevent CASCADE;
+CREATE INDEX fki_collectingobject_tblcollectingevent ON public.tblcollectionobject
+	USING btree
+	(
+	  collectingevent_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_determination_collectionobject | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_determination_collectionobject CASCADE;
+CREATE INDEX fki_determination_collectionobject ON public.tbldetermination
+	USING btree
+	(
+	  collectionobject_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_determination_qualifier | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_determination_qualifier CASCADE;
+CREATE INDEX fki_determination_qualifier ON public.tbldetermination
+	USING btree
+	(
+	  qualifier_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_determination_typestatus | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_determination_typestatus CASCADE;
+CREATE INDEX fki_determination_typestatus ON public.tbldetermination
+	USING btree
+	(
+	  typestatus_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_fk_tblcollectionobject_tbllifestage | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_fk_tblcollectionobject_tbllifestage CASCADE;
+CREATE INDEX fki_fk_tblcollectionobject_tbllifestage ON public.tblcollectionobject
+	USING btree
+	(
+	  lifestage_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_taxon | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_taxon CASCADE;
+CREATE INDEX fki_taxon ON public.tbldetermination
+	USING btree
+	(
+	  taxon_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblcollectingevent_tblcollectingtrip | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblcollectingevent_tblcollectingtrip CASCADE;
+CREATE INDEX fki_tblcollectingevent_tblcollectingtrip ON public.tblcollectingevent
+	USING btree
+	(
+	  collectingtrip_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblcollectionobject_tbl_collectingtype | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblcollectionobject_tbl_collectingtype CASCADE;
+CREATE INDEX fki_tblcollectionobject_tbl_collectingtype ON public.tblcollectionobject
+	USING btree
+	(
+	  collobjecttype_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblcollector_collectingevent | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblcollector_collectingevent CASCADE;
+CREATE INDEX fki_tblcollector_collectingevent ON public.tblcollector
+	USING btree
+	(
+	  collectingevent_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblcollector_tblagent | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblcollector_tblagent CASCADE;
+CREATE INDEX fki_tblcollector_tblagent ON public.tblcollector
+	USING btree
+	(
+	  agent_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblcollobjectimages_collectionobject | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblcollobjectimages_collectionobject CASCADE;
+CREATE INDEX fki_tblcollobjectimages_collectionobject ON public.tblcollobjectimages
+	USING btree
+	(
+	  collectionobject_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tbldeterminator_tblagent | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tbldeterminator_tblagent CASCADE;
+CREATE INDEX fki_tbldeterminator_tblagent ON public.tbldeterminator
+	USING btree
+	(
+	  agent_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tbldeterminator_tbldetermination | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tbldeterminator_tbldetermination CASCADE;
+CREATE INDEX fki_tbldeterminator_tbldetermination ON public.tbldeterminator
+	USING btree
+	(
+	  determination_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblpreparation_collectingobject | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblpreparation_collectingobject CASCADE;
+CREATE INDEX fki_tblpreparation_collectingobject ON public.tblpreparation
+	USING btree
+	(
+	  collectionobject_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblpreparation_tblagent | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblpreparation_tblagent CASCADE;
+CREATE INDEX fki_tblpreparation_tblagent ON public.tblpreparation
+	USING btree
+	(
+	  agent_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblpreparation_tbllifestage | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblpreparation_tbllifestage CASCADE;
+CREATE INDEX fki_tblpreparation_tbllifestage ON public.tblpreparation
+	USING btree
+	(
+	  lifestage_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblpreparation_tblssex | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblpreparation_tblssex CASCADE;
+CREATE INDEX fki_tblpreparation_tblssex ON public.tblpreparation
+	USING btree
+	(
+	  sex_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblscollectionobject_tblsex | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblscollectionobject_tblsex CASCADE;
+CREATE INDEX fki_tblscollectionobject_tblsex ON public.tblcollectionobject
+	USING btree
+	(
+	  sex_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tblsiteimages_tblcollectingevent | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tblsiteimages_tblcollectingevent CASCADE;
+CREATE INDEX fki_tblsiteimages_tblcollectingevent ON public.tblsiteimages
+	USING btree
+	(
+	  collectingevent_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tbltaxon_accepted_uuid | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tbltaxon_accepted_uuid CASCADE;
+CREATE INDEX fki_tbltaxon_accepted_uuid ON public.tbltaxon
+	USING btree
+	(
+	  accepted_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fki_tbltaxon_tblrank | type: INDEX --
+-- DROP INDEX IF EXISTS public.fki_tbltaxon_tblrank CASCADE;
+CREATE INDEX fki_tbltaxon_tblrank ON public.tbltaxon
+	USING btree
+	(
+	  rank_uuid
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: sidx_tbllocality_locality_geom | type: INDEX --
+-- DROP INDEX IF EXISTS public.sidx_tbllocality_locality_geom CASCADE;
+CREATE INDEX sidx_tbllocality_locality_geom ON public.tbllocality
+	USING gist
+	(
+	  locality_geom
+	)	WITH (FILLFACTOR = 90);
+-- ddl-end --
+
+-- object: fk_collectingevent_tbllocality | type: CONSTRAINT --
+-- ALTER TABLE public.tblcollectingevent DROP CONSTRAINT IF EXISTS fk_collectingevent_tbllocality CASCADE;
+ALTER TABLE public.tblcollectingevent ADD CONSTRAINT fk_collectingevent_tbllocality FOREIGN KEY (locality_uuid)
+REFERENCES public.tbllocality (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblcollectingevent_tblcollectingtrip | type: CONSTRAINT --
+-- ALTER TABLE public.tblcollectingevent DROP CONSTRAINT IF EXISTS fk_tblcollectingevent_tblcollectingtrip CASCADE;
+ALTER TABLE public.tblcollectingevent ADD CONSTRAINT fk_tblcollectingevent_tblcollectingtrip FOREIGN KEY (collectingtrip_uuid)
+REFERENCES public.tblcollectingtrip (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_collectingobject_parentcontainer | type: CONSTRAINT --
+-- ALTER TABLE public.tblcollectionobject DROP CONSTRAINT IF EXISTS fk_collectingobject_parentcontainer CASCADE;
+ALTER TABLE public.tblcollectionobject ADD CONSTRAINT fk_collectingobject_parentcontainer FOREIGN KEY (reference_uuid)
+REFERENCES public.tblcollectionobject (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_collectingobject_tblcollectingevent | type: CONSTRAINT --
+-- ALTER TABLE public.tblcollectionobject DROP CONSTRAINT IF EXISTS fk_collectingobject_tblcollectingevent CASCADE;
+ALTER TABLE public.tblcollectionobject ADD CONSTRAINT fk_collectingobject_tblcollectingevent FOREIGN KEY (collectingevent_uuid)
+REFERENCES public.tblcollectingevent (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblcollectionobject_tbl_collectingtype | type: CONSTRAINT --
+-- ALTER TABLE public.tblcollectionobject DROP CONSTRAINT IF EXISTS fk_tblcollectionobject_tbl_collectingtype CASCADE;
+ALTER TABLE public.tblcollectionobject ADD CONSTRAINT fk_tblcollectionobject_tbl_collectingtype FOREIGN KEY (collobjecttype_uuid)
+REFERENCES public.tblcollobjecttype (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblcollectionobject_tbllifestage | type: CONSTRAINT --
+-- ALTER TABLE public.tblcollectionobject DROP CONSTRAINT IF EXISTS fk_tblcollectionobject_tbllifestage CASCADE;
+ALTER TABLE public.tblcollectionobject ADD CONSTRAINT fk_tblcollectionobject_tbllifestage FOREIGN KEY (lifestage_uuid)
+REFERENCES public.tbllifestage (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblscollectionobject_tblsex | type: CONSTRAINT --
+-- ALTER TABLE public.tblcollectionobject DROP CONSTRAINT IF EXISTS fk_tblscollectionobject_tblsex CASCADE;
+ALTER TABLE public.tblcollectionobject ADD CONSTRAINT fk_tblscollectionobject_tblsex FOREIGN KEY (sex_uuid)
+REFERENCES public.tblsex (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblcollector_collectingevent | type: CONSTRAINT --
+-- ALTER TABLE public.tblcollector DROP CONSTRAINT IF EXISTS fk_tblcollector_collectingevent CASCADE;
+ALTER TABLE public.tblcollector ADD CONSTRAINT fk_tblcollector_collectingevent FOREIGN KEY (collectingevent_uuid)
+REFERENCES public.tblcollectingevent (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblcollector_tblagent | type: CONSTRAINT --
+-- ALTER TABLE public.tblcollector DROP CONSTRAINT IF EXISTS fk_tblcollector_tblagent CASCADE;
+ALTER TABLE public.tblcollector ADD CONSTRAINT fk_tblcollector_tblagent FOREIGN KEY (agent_uuid)
+REFERENCES public.tblagent (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblcollobjectimages_collectionobject | type: CONSTRAINT --
+-- ALTER TABLE public.tblcollobjectimages DROP CONSTRAINT IF EXISTS fk_tblcollobjectimages_collectionobject CASCADE;
+ALTER TABLE public.tblcollobjectimages ADD CONSTRAINT fk_tblcollobjectimages_collectionobject FOREIGN KEY (collectionobject_uuid)
+REFERENCES public.tblcollectionobject (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_determination_collectionobject | type: CONSTRAINT --
+-- ALTER TABLE public.tbldetermination DROP CONSTRAINT IF EXISTS fk_determination_collectionobject CASCADE;
+ALTER TABLE public.tbldetermination ADD CONSTRAINT fk_determination_collectionobject FOREIGN KEY (collectionobject_uuid)
+REFERENCES public.tblcollectionobject (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_determination_qualifier | type: CONSTRAINT --
+-- ALTER TABLE public.tbldetermination DROP CONSTRAINT IF EXISTS fk_determination_qualifier CASCADE;
+ALTER TABLE public.tbldetermination ADD CONSTRAINT fk_determination_qualifier FOREIGN KEY (qualifier_uuid)
+REFERENCES public.tblqualifier (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_determination_typestatus | type: CONSTRAINT --
+-- ALTER TABLE public.tbldetermination DROP CONSTRAINT IF EXISTS fk_determination_typestatus CASCADE;
+ALTER TABLE public.tbldetermination ADD CONSTRAINT fk_determination_typestatus FOREIGN KEY (typestatus_uuid)
+REFERENCES public.tbltypestatus (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_taxon | type: CONSTRAINT --
+-- ALTER TABLE public.tbldetermination DROP CONSTRAINT IF EXISTS fk_taxon CASCADE;
+ALTER TABLE public.tbldetermination ADD CONSTRAINT fk_taxon FOREIGN KEY (taxon_uuid)
+REFERENCES public.tbltaxon (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tbldeterminator_tblagent | type: CONSTRAINT --
+-- ALTER TABLE public.tbldeterminator DROP CONSTRAINT IF EXISTS fk_tbldeterminator_tblagent CASCADE;
+ALTER TABLE public.tbldeterminator ADD CONSTRAINT fk_tbldeterminator_tblagent FOREIGN KEY (agent_uuid)
+REFERENCES public.tblagent (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tbldeterminator_tbldetermination | type: CONSTRAINT --
+-- ALTER TABLE public.tbldeterminator DROP CONSTRAINT IF EXISTS fk_tbldeterminator_tbldetermination CASCADE;
+ALTER TABLE public.tbldeterminator ADD CONSTRAINT fk_tbldeterminator_tbldetermination FOREIGN KEY (determination_uuid)
+REFERENCES public.tbldetermination (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblpreparation_collectingobject | type: CONSTRAINT --
+-- ALTER TABLE public.tblpreparation DROP CONSTRAINT IF EXISTS fk_tblpreparation_collectingobject CASCADE;
+ALTER TABLE public.tblpreparation ADD CONSTRAINT fk_tblpreparation_collectingobject FOREIGN KEY (collectionobject_uuid)
+REFERENCES public.tblcollectionobject (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblpreparation_tblagent | type: CONSTRAINT --
+-- ALTER TABLE public.tblpreparation DROP CONSTRAINT IF EXISTS fk_tblpreparation_tblagent CASCADE;
+ALTER TABLE public.tblpreparation ADD CONSTRAINT fk_tblpreparation_tblagent FOREIGN KEY (agent_uuid)
+REFERENCES public.tblagent (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblpreparation_tbllifestage | type: CONSTRAINT --
+-- ALTER TABLE public.tblpreparation DROP CONSTRAINT IF EXISTS fk_tblpreparation_tbllifestage CASCADE;
+ALTER TABLE public.tblpreparation ADD CONSTRAINT fk_tblpreparation_tbllifestage FOREIGN KEY (lifestage_uuid)
+REFERENCES public.tbllifestage (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblpreparation_tblssex | type: CONSTRAINT --
+-- ALTER TABLE public.tblpreparation DROP CONSTRAINT IF EXISTS fk_tblpreparation_tblssex CASCADE;
+ALTER TABLE public.tblpreparation ADD CONSTRAINT fk_tblpreparation_tblssex FOREIGN KEY (sex_uuid)
+REFERENCES public.tblsex (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tblsiteimages_tblcollectingevent | type: CONSTRAINT --
+-- ALTER TABLE public.tblsiteimages DROP CONSTRAINT IF EXISTS fk_tblsiteimages_tblcollectingevent CASCADE;
+ALTER TABLE public.tblsiteimages ADD CONSTRAINT fk_tblsiteimages_tblcollectingevent FOREIGN KEY (collectingevent_uuid)
+REFERENCES public.tblcollectingevent (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tbltaxon_accepted_uuid | type: CONSTRAINT --
+-- ALTER TABLE public.tbltaxon DROP CONSTRAINT IF EXISTS fk_tbltaxon_accepted_uuid CASCADE;
+ALTER TABLE public.tbltaxon ADD CONSTRAINT fk_tbltaxon_accepted_uuid FOREIGN KEY (accepted_uuid)
+REFERENCES public.tbltaxon (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_tbltaxon_tblrank | type: CONSTRAINT --
+-- ALTER TABLE public.tbltaxon DROP CONSTRAINT IF EXISTS fk_tbltaxon_tblrank CASCADE;
+ALTER TABLE public.tbltaxon ADD CONSTRAINT fk_tbltaxon_tblrank FOREIGN KEY (rank_uuid)
+REFERENCES public.tblrank (uuid) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+
