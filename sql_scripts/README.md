@@ -3,7 +3,7 @@
 <h3>Migration from MySQLdump to Postgis</h3><br>
 
 Migration Tool on Linux System: PGloader
-http://pgloader.io/index.html
+http://pgloader.io/howto/mysql.html
 
 
 
