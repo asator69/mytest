@@ -10,8 +10,3 @@
 
 <h4>4. SQL Snippets of deriving essential Geodata</h4>
 
-<h4>5. Create table from the temporay view </h4>
-
-<h4>6.Migrate table to new postgis database</h4>
-
-<h4>7.Adding administrative Migrate table to new postgis database</h4>
