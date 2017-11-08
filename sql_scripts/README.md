@@ -1,9 +1,9 @@
 # PostGIS Documentation
 
-<h2>Building the Indobiosys Postgis Database</h2><br>
+<h1>Building the Indobiosys Postgis Database</h1><br>
 
 <h3>1. Migrate Mysqldump to Postgresql</h3>
-Migration Tool on Linux System: PGloader
+Migration Tool on Linux System: PGloader<br>
 http://pgloader.io/howto/mysql.html
 <br>
 <h3>2. Adding geometry to geodata table</h3>
@@ -17,4 +17,6 @@ See foreignkeys.sql
 
 <h3>4. Join geom column to taxon table by building table joins in a temporay view</h3>
 
-<h3>5. Create Table from View</h3>
+<h3>5. Create table from the temporay view </h3>
+
+<h3>6.Migrate table to new postgis database</h3>
