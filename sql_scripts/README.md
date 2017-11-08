@@ -1,8 +1,8 @@
 # PostGIS Documentation
 
-<h1>Building the Indobiosys Postgis Database</h1><br>
+<h2>Building the Indobiosys Postgis Database</h2><br>
 
-<h3>1. Migrate Mysqldump to Postgresql</h3>
+<h4>1. Migrate Mysqldump to Postgresql</h4>
 Migration Tool on Linux System: PGloader<br>
 http://pgloader.io/howto/mysql.html
 <br>
