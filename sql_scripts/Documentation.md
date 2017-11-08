@@ -21,7 +21,7 @@ See foreignkeys.sql
 
 <h4>6.Migrate table to new postgis database</h4>
 
-<h4>7.Adding indonesian administrative boundaries to DB</h4>
+<h4>7.Adding indonesian administrative boundaries to db</h4>
 GADM Database 2.8 (November 2015)</br>
 Global administrative areas: http://gadm.org</br>
 
