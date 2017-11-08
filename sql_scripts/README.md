@@ -13,8 +13,12 @@ ALTER TABLE public.tbllocality<br>
 SELECT AddGeometryColumn('tbllocality', 'locality_geom', 4326, 'POINT', 2 );<br>
 UPDATE public.tbllocality SET locality_geom = ST_SetSRID(ST_MakePoint(longdec_begin, latdec_begin), 4326);<br>
 
+<hr3>3. Establishing referential integrety by foreign keys</hr3><br>
 
+<hr3>4. Join geom column to taxon table</hr3><br>
 
+<hr3>4. Join geom column to taxon table</hr3><br>
 
+<hr3>5. Building Table Joins in a temporay View</hr3><br>
 
-
+<hr3>5. Create Table from View</hr3><br>
