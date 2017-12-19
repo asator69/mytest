@@ -1,12 +1,16 @@
-# Documentation of the Geotest
+# Indobiosys WebGIS Docs
+
+<h4>*** Work in Progress ***</h4>
 
 <h3>Purpose</h3><br>
 
-This Repository aims at provide the documentation and Userguide to the 'Project' Geotest Implementation.
+This Repository provides the documentation of building the Indobiosys WebGIS 'IBIS'.
+using PostGIS as Geodatabase and Leaflet. 
+
+<a href="http://www.indobiosys.org">Indobiosys Project</a>
 
 
+<h3>PostGIS Database</h3>
 
-<h3>Using Geoserver in a Desktop GIS</h3>
-
-1. QGIS
+1. Supplied by the MfN-Geoserver for Integration in a DesktopGIS
 
