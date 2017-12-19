@@ -7,7 +7,7 @@
 This Repository provides the documentation of building the Indobiosys WebGIS 'IBIS'.
 Components: PostGIS, Leaflet. 
 
-Web: <a href="http://www.indobiosys.org">Indobiosys Project</a>
+Web: <a href="http://www.indobiosys.org/" target="_blank">Indobiosys Project</a>
 
 
 <h3>PostGIS Database</h3>
