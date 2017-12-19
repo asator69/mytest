@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>Simple Map</title>
+    <meta charset="utf-8" />
+    
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+
+ <style>
+        #map {
+            width:  600px;
+            height: 400px;
+        }
+ </style>
+    
+</head>
+    
+<body>
+
+
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script> 
+
+    <div id="map"></div>
+  
+    
+
+    <script>
+	var map = L.map('map').setView([ -4.0,115.0], 4);
+    mapLink = 
+     '<a href=""http://stamen.com">Stamen Design</a>';
+        L.tileLayer(
+           'http://stamen-tiles-a.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; ' + mapLink,
+            maxZoom: 23,
+            }).addTo(map);   
+    
+        var p1 = L.marker([-6.72930936,106.70711912]).bindPopup("<strong>Occurence</strong><br><a href=\"http://indobiosys.org/db/event/08E82CB4-5E86-4C22-8E26-5824DCFBD2FE\">Event 1</a><br><a href=\"http://indobiosys.org\">Event 2</a>"),  
+            p2 = L.marker([-6.60314231,106.80669752]).bindPopup("<strong>Occurence</strong><br><a href=\"http://indobiosys.org/db/event/2122E289-8EB1-4EEB-A86B-EACA741E923C\">Event</a>"), 
+            p3 = L.marker([-2.1564659,120.73233596]).bindPopup("<strong>Occurence</strong><br><a href=\"http://indobiosys.org/db/event/58E6AF6D-6243-4F7A-B9B5-89D0DF33A256\">Event</a>");
+            
+        var points = L.featureGroup([p1, p2, p3]).addTo(map);
+        
+        map.fitBounds(points.getBounds(), { padding: [16,16]  });
+    </script>	
+   
+</body>
+</html>
